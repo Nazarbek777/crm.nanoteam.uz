@@ -9,7 +9,13 @@ export function importFromExcel(file: File): Promise<any[]> {
         const data = new Uint8Array(e.target?.result as ArrayBuffer)
         const workbook = XLSX.read(data, { type: 'array' })
         const firstSheetName = workbook.SheetNames[0]
+        if (!firstSheetName) {
+          throw new Error('Excel faylida ma\'lumot topilmadi')
+        }
         const worksheet = workbook.Sheets[firstSheetName]
+        if (!worksheet) {
+          throw new Error('Excel fayl tarkibi noto\'g\'ri')
+        }
         const jsonData = XLSX.utils.sheet_to_json(worksheet)
         resolve(jsonData)
       } catch (error) {

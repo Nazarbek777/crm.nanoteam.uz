@@ -125,11 +125,11 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 
-const operators = ref([])
-const technicalUsers = ref([])
+const operators = ref<any[]>([])
+const technicalUsers = ref<any[]>([])
 const loading = ref(true)
 const showAddModal = ref(false)
-const editingOperator = ref(null)
+const editingOperator = ref<any | null>(null)
 
 const form = ref({
   name: '',
@@ -158,8 +158,8 @@ async function fetchOperators() {
 function editOperator(operator: any) {
   editingOperator.value = operator
   form.value = {
-    name: operator.user.name,
-    email: operator.user.email,
+    name: operator.user?.name || '',
+    email: operator.user?.email || '',
     password: '',
     section_type: operator.section_type,
   }

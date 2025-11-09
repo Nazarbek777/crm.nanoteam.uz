@@ -514,8 +514,8 @@ import { exportMastersToExcel } from '../utils/excelExport'
 import { importFromExcel, mapExcelToMasters } from '../utils/excelImport'
 
 const router = useRouter()
-const masters = ref([])
-const filteredMasters = ref([])
+const masters = ref<any[]>([])
+const filteredMasters = ref<any[]>([])
 const loading = ref(true)
 const searchQuery = ref('')
 const searchTimeout = ref<number | null>(null)
@@ -540,7 +540,7 @@ const showErrorModal = ref(false)
 const showDeleteConfirm = ref(false)
 const deleteMasterId = ref<number | null>(null)
 const selectedMaster = ref<any | null>(null)
-const technicalUsers = ref([])
+const technicalUsers = ref<any[]>([])
 const loadingTechnicalUsers = ref(false)
 const loadingTransfer = ref(false)
 const successMessage = ref('')
@@ -916,6 +916,9 @@ function openConversationModal(master: any) {
 }
 
 async function saveConversation() {
+  if (!selectedMaster.value) {
+    return
+  }
   try {
     await api.post('/conversations', {
       master_id: selectedMaster.value.id,
@@ -943,6 +946,9 @@ function openReminderModal(master: any) {
 }
 
 async function saveReminder() {
+  if (!selectedMaster.value) {
+    return
+  }
   try {
     await api.post('/reminders', {
       master_id: selectedMaster.value.id,
@@ -1047,7 +1053,9 @@ function closeTransferModal() {
 }
 
 async function saveTransfer() {
-  if (!transferForm.value.technical_user_id) return
+  if (!selectedMaster.value || !transferForm.value.technical_user_id) {
+    return
+  }
   
   try {
     loadingTransfer.value = true

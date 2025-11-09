@@ -111,7 +111,7 @@ import { useRoute } from 'vue-router'
 import api from '../services/api'
 
 const route = useRoute()
-const client = ref(null)
+const client = ref<any | null>(null)
 const loading = ref(true)
 
 onMounted(() => {

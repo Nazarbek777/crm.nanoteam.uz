@@ -132,6 +132,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../services/api'
 import Breadcrumbs from '../components/Breadcrumbs.vue'
+import type { Notification } from '../types/entities'
 
 const router = useRouter()
 const route = useRoute()
@@ -150,16 +151,30 @@ const pageTitles: Record<string, string> = {
 
 const currentPageTitle = computed(() => pageTitles[route.name as string] || 'Dashboard')
 
-const notifications = ref([])
+const notifications = ref<Notification[]>([])
 const unreadCount = ref(0)
 const loadingNotifications = ref(false)
 const showNotificationDropdown = ref(false)
 const toastMessage = ref('')
 const toastType = ref<'success' | 'error'>('success')
-let notificationInterval: number | null = null
-let toastTimeout: number | null = null
+let notificationInterval: ReturnType<typeof window.setInterval> | null = null
+let toastTimeout: ReturnType<typeof window.setTimeout> | null = null
 
-function handleNotificationClick(notification: any) {
+const successToastHandler = (event: Event) => {
+  const customEvent = event as CustomEvent<{ message: string }>
+  if (customEvent.detail?.message) {
+    showToast(customEvent.detail.message, 'success')
+  }
+}
+
+const errorToastHandler = (event: Event) => {
+  const customEvent = event as CustomEvent<{ message: string }>
+  if (customEvent.detail?.message) {
+    showToast(customEvent.detail.message, 'error')
+  }
+}
+
+function handleNotificationClick(notification: Notification) {
   if (!notification.is_read) {
     markAsRead(notification.id)
   }
@@ -199,16 +214,8 @@ onMounted(() => {
   
   // Close dropdown when clicking outside
   document.addEventListener('click', handleClickOutside)
-  
-  // Listen for success notifications
-  window.addEventListener('show-success-toast', ((e: CustomEvent) => {
-    showToast(e.detail.message, 'success')
-  }) as EventListener)
-  
-  // Listen for error notifications
-  window.addEventListener('show-error-toast', ((e: CustomEvent) => {
-    showToast(e.detail.message, 'error')
-  }) as EventListener)
+  window.addEventListener('show-success-toast', successToastHandler as EventListener)
+  window.addEventListener('show-error-toast', errorToastHandler as EventListener)
 })
 
 onUnmounted(() => {
@@ -219,16 +226,8 @@ onUnmounted(() => {
     clearTimeout(toastTimeout)
   }
   document.removeEventListener('click', handleClickOutside)
-  
-  const successHandler = ((e: CustomEvent) => {
-    showToast(e.detail.message, 'success')
-  }) as EventListener
-  const errorHandler = ((e: CustomEvent) => {
-    showToast(e.detail.message, 'error')
-  }) as EventListener
-  
-  window.removeEventListener('show-success-toast', successHandler)
-  window.removeEventListener('show-error-toast', errorHandler)
+  window.removeEventListener('show-success-toast', successToastHandler as EventListener)
+  window.removeEventListener('show-error-toast', errorToastHandler as EventListener)
 })
 
 function handleClickOutside(event: MouseEvent) {
@@ -245,7 +244,7 @@ async function fetchNotifications() {
       api.get('/notifications'),
       api.get('/notifications/unread-count')
     ])
-    notifications.value = notificationsRes.data
+    notifications.value = notificationsRes.data as Notification[]
     unreadCount.value = countRes.data.count || 0
   } catch (error) {
     console.error('Fetch notifications error:', error)
@@ -261,7 +260,10 @@ function toggleNotifications() {
   }
 }
 
-function formatTime(date: string) {
+function formatTime(date?: string | null) {
+  if (!date) {
+    return '-'
+  }
   const now = new Date()
   const notificationDate = new Date(date)
   const diffMs = now.getTime() - notificationDate.getTime()

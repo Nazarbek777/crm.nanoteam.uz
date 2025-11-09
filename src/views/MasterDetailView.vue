@@ -152,7 +152,7 @@ import { useRoute } from 'vue-router'
 import api from '../services/api'
 
 const route = useRoute()
-const master = ref(null)
+const master = ref<any | null>(null)
 const loading = ref(true)
 
 onMounted(() => {

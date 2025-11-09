@@ -86,7 +86,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 
-const conversations = ref([])
+const conversations = ref<any[]>([])
 const loading = ref(true)
 const filterType = ref('')
 

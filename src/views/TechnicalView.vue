@@ -151,11 +151,11 @@ import { useRouter } from 'vue-router'
 import api from '../services/api'
 
 const router = useRouter()
-const masters = ref([])
+const masters = ref<any[]>([])
 const loading = ref(true)
 const showConversationModal = ref(false)
 const showReminderModal = ref(false)
-const selectedMaster = ref(null)
+const selectedMaster = ref<any | null>(null)
 
 const conversationForm = ref({
   note: '',
@@ -230,6 +230,9 @@ function openConversationModal(master: any) {
 }
 
 async function saveConversation() {
+  if (!selectedMaster.value) {
+    return
+  }
   try {
     await api.post('/conversations', {
       master_id: selectedMaster.value.id,
@@ -257,6 +260,9 @@ function openReminderModal(master: any) {
 }
 
 async function saveReminder() {
+  if (!selectedMaster.value) {
+    return
+  }
   try {
     await api.post('/reminders', {
       master_id: selectedMaster.value.id,

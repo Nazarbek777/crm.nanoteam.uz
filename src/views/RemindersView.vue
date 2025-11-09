@@ -70,7 +70,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 
-const reminders = ref([])
+const reminders = ref<any[]>([])
 const loading = ref(true)
 
 onMounted(() => {

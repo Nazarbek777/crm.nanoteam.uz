@@ -78,7 +78,7 @@ const stats = ref({
   active_clients: 0,
 })
 
-const todayReminders = ref([])
+const todayReminders = ref<any[]>([])
 const loading = ref(true)
 const distributionChart = ref<HTMLCanvasElement | null>(null)
 const statusChart = ref<HTMLCanvasElement | null>(null)
@@ -166,8 +166,7 @@ function createCharts() {
             y: {
               beginAtZero: true,
               grid: {
-                color: '#e5e7eb',
-                drawBorder: false
+                color: '#e5e7eb'
               },
               ticks: {
                 color: '#6b7280',
@@ -184,7 +183,7 @@ function createCharts() {
                 color: '#6b7280',
                 font: {
                   size: 13,
-                  weight: '600'
+                  weight: 600
                 }
               }
             }
@@ -239,7 +238,7 @@ function createCharts() {
                 pointStyle: 'circle',
                 font: {
                   size: 12,
-                  weight: '500'
+                  weight: 500
                 },
                 color: '#374151'
               }

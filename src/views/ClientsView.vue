@@ -279,8 +279,8 @@ import SendSmsModal from '../components/SendSmsModal.vue'
 import { exportClientsToExcel } from '../utils/excelExport'
 
 const router = useRouter()
-const clients = ref([])
-const filteredClients = ref([])
+const clients = ref<any[]>([])
+const filteredClients = ref<any[]>([])
 const loading = ref(true)
 const searchQuery = ref('')
 const searchTimeout = ref<number | null>(null)
